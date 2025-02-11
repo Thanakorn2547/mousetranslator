@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code Translator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        textarea { width: 80%; height: 100px; margin: 10px 0; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Morse Code Translator</h1>
+    <textarea id="inputText" placeholder="Enter text or Morse code..."></textarea>
+    <br>
+    <button onclick="convertToMorse()">Text to Morse</button>
+    <button onclick="convertToText()">Morse to Text</button>
+    <button onclick="toggleLanguage()">Switch to English</button>
+    <br>
+    <textarea id="outputText" readonly></textarea>
+    <br>
+    <button onclick="playMorseSound()">Play Morse Sound</button>
+
+    <script>
+        let isThai = true;
+        const morseCodeEnglish = { 'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+            'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...',
+            'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..',
+            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....',
+            '7': '--...', '8': '---..', '9': '----.', '0': '-----', ' ': '/'};
+        
+        const morseCodeThai = { 'ก': '--.', 'ข': '-.-', 'ค': '-.--', 'ง': '---', 'จ': '.--.',
+            'ฉ': '-..-', 'ช': '--..', 'ซ': '...-', 'ญ': '..--', 'ฎ': '.-.-', 'ฏ': '-.-.',
+            'ฐ': '.-..-', 'ฑ': '..--.', 'ฒ': '.---.', 'ณ': '--.--', 'ด': '-..', 'ต': '-',
+            'ถ': '--..-', 'ท': '-.-.', 'ธ': '-.--.', 'น': '-.', 'บ': '-...', 'ป': '.--',
+            'ผ': '.-.', 'ฝ': '..-.', 'พ': '.-...', 'ฟ': '...-.', 'ม': '--', 'ย': '-.--',
+            'ร': '.-.', 'ล': '.-..', 'ว': '.--', 'ศ': '....', 'ษ': '-..-.', 'ส': '...',
+            'ห': '....-', 'อ': '---.', 'ฮ': '--.-', 'ะ': '.-', 'ั': '..-', 'า': '---',
+            'ำ': '..--..', 'ิ': '-.', 'ี': '-..-', 'ึ': '...-', 'ื': '..-.', 'ุ': '--.',
+            'ู': '--..', 'เ': '.-', 'แ': '.--', 'โ': '---.', 'ใ': '..--', 'ไ': '.-.-'};
+        
+        function getMorseCodeMap() {
+            return isThai ? morseCodeThai : morseCodeEnglish;
+        }
+        
+        function convertToMorse() {
+            const text = document.getElementById("inputText").value.toUpperCase();
+            const morseCode = getMorseCodeMap();
+            const result = text.split('').map(char => morseCode[char] || '').join(' ');
+            document.getElementById("outputText").value = result;
+        }
+        
+        function convertToText() {
+            const morse = document.getElementById("inputText").value.trim();
+            const morseCode = getMorseCodeMap();
+            const reversedMorse = Object.fromEntries(Object.entries(morseCode).map(([k, v]) => [v, k]));
+            const result = morse.split(' ').map(code => reversedMorse[code] || '').join('');
+            document.getElementById("outputText").value = result;
+        }
+        
+        function toggleLanguage() {
+            isThai = !isThai;
+            document.getElementById("outputText").value = "";
+            document.getElementById("inputText").value = "";
+            document.querySelector("button[onclick='toggleLanguage()']").textContent = "Switch to " + (isThai ? "English" : "Thai");
+        }
+        
+        function playMorseSound() {
+            const morse = document.getElementById("outputText").value;
+            let index = 0;
+            function playNext() {
+                if (index >= morse.length) return;
+                const audio = new Audio(morse[index] === '.' ? 'dot.mp3' : 'dash.mp3');
+                audio.play();
+                setTimeout(playNext, morse[index] === '.' ? 300 : 600);
+                index++;
+            }
+            playNext();
+        }
+    </script>
+</body>
+</html>
+
+
